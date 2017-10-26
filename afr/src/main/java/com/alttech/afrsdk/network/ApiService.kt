@@ -6,6 +6,11 @@ package com.alttech.afrsdk.network
 
 
 import com.alttech.afrsdk.BuildConfig
+import com.alttech.afrsdk.data.WidgetDataResult
+import com.squareup.moshi.KotlinJsonAdapterFactory
+import com.squareup.moshi.Moshi
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory
@@ -18,8 +23,8 @@ import rx.Observable
  */
 interface ApiService {
 
-  @GET("api/widget")
-  fun getShows(@Query("appId") order: String, @Query("resId") resId: String): Observable<>
+  @GET("api/widget/station")
+  fun getShows(@Query("appId") appId: String, @Query("resId") resId: String): Observable<WidgetDataResult>
 
 
   @FormUrlEncoded
@@ -35,11 +40,20 @@ interface ApiService {
 
     fun getApiService(): ApiService {
 
+      val moshi = Moshi.Builder()
+          .add(KotlinJsonAdapterFactory())
+          .build()
+
+      val httpClient = OkHttpClient.Builder();
+      val interceptor = HttpLoggingInterceptor();
+      interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+      httpClient.interceptors().add(interceptor);
 
       return Retrofit.Builder()
           .baseUrl(if (staging()) STAGING_ENDPOINT else PRODUCTION_ENDPOINT)
           .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
-          .addConverterFactory(MoshiConverterFactory.create())
+          .addConverterFactory(MoshiConverterFactory.create(moshi))
+//          .client(httpClient.build())
           .build()
           .create(ApiService::class.java)
     }

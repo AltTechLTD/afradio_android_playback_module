@@ -7,9 +7,9 @@ import com.squareup.moshi.Json
  */
 
 
-class Category {
-  @Json(name = "key")
-  var key: String? = null
-  @Json(name = "name")
-  var name: String? = null
-}
+data class Category(
+    @Json(name = "key")
+    var key: String?,
+    @Json(name = "name")
+    var name: String?
+)

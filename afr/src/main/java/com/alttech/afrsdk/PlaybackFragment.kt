@@ -7,7 +7,8 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
+import com.alttech.afrsdk.data.WidgetDataResult
+import com.alttech.afrsdk.network.ApiCalls
 
 
 class PlaybackFragment : Fragment(), View.OnClickListener {
@@ -45,7 +46,18 @@ class PlaybackFragment : Fragment(), View.OnClickListener {
 
     bottomSheetBehaviour?.state = BottomSheetBehavior.STATE_COLLAPSED
 
+    fetchWidgetData()
+
     return view
+  }
+
+  private fun fetchWidgetData() {
+    ApiCalls.getShows(config!!.appId!!, config!!.resId!!)
+        .subscribe({ t: WidgetDataResult ->
+          println(">>>>>>>>>>>>>>>>>>>> this is the name of the station ${t.name}")
+        }, {
+          it.printStackTrace()
+        })
   }
 
   companion object {

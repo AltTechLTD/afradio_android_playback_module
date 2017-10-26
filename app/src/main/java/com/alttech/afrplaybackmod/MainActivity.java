@@ -15,6 +15,9 @@ public class MainActivity extends AppCompatActivity {
 
     Config config = new Config();
 
+    config.setAppId("tKvHWTnKAXLfxjAYm");
+    config.setResId("NFR3cG4sEqLT5pnk3");
+
     getSupportFragmentManager()
         .beginTransaction()
         .add(R.id.main, PlaybackFragment.Companion.newInstance(config))

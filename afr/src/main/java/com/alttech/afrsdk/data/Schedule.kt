@@ -6,11 +6,11 @@ import com.squareup.moshi.Json
  * Created by bubu on 20/10/2017.
  */
 
-class Schedule {
+data class Schedule (
   @Json(name = "day")
-  var day: Int? = null
+  val day: Int?,
   @Json(name = "duration")
-  var duration: Int? = null
+  val duration: Int?,
   @Json(name = "start")
-  var start: Int? = null
-}
+  val start: Int?
+)

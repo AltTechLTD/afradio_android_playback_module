@@ -1,34 +1,34 @@
 package com.alttech.afrsdk.data
 
-import com.squareup.moshi.Json
-
 /**
  * Created by bubu on 20/10/2017.
  */
 
-data class Show(
+import com.squareup.moshi.Json
+
+data class WidgetDataResult(
     @Json(name = "_id")
     val id: String?,
-    @Json(name = "category")
-    val category: Category?,
+    @Json(name = "cities")
+    val cities: List<String?>?,
     @Json(name = "country")
     val country: String?,
     @Json(name = "createdAt")
     val createdAt: String?,
     @Json(name = "description")
     val description: String?,
+    @Json(name = "featured")
+    val featured: Boolean?,
+    @Json(name = "frequency")
+    val frequency: String?,
     @Json(name = "genres")
-    val genres: List<Any>?,
-    @Json(name = "hashTag")
-    val hashTag: String?,
+    val genres: List<String>?,
     @Json(name = "imgUrl")
     val imgUrl: String?,
     @Json(name = "name")
     val name: String?,
-    @Json(name = "playback")
-    val playback: List<Playback>?,
-    @Json(name = "schedules")
-    val schedules: List<Schedule>?,
-    @Json(name = "subscribers")
-    val subscribers: Int?
+    @Json(name = "shows")
+    val shows: List<Show>?,
+    @Json(name = "streamUrl")
+    val streamUrl: String?
 )
