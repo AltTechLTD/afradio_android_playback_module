@@ -26,12 +26,9 @@ interface ApiService {
   @GET("api/widget/station")
   fun getShows(@Query("appId") appId: String, @Query("resId") resId: String): Observable<WidgetDataResult>
 
+  @GET("api/ad_credentials")
+  fun getAdCredentials(): Observable<String>
 
-  @FormUrlEncoded
-  @PUT("api/user/fcm")
-  fun updateFCM(
-      @Field("fbuid") fbuid: String,
-      @Field("fcmId") token: String): Observable<Response<Void>>
 
   /********
    * Util class that sets up a new services
@@ -46,7 +43,7 @@ interface ApiService {
 
       val httpClient = OkHttpClient.Builder();
       val interceptor = HttpLoggingInterceptor();
-      interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+      interceptor.level = HttpLoggingInterceptor.Level.BODY;
       httpClient.interceptors().add(interceptor);
 
       return Retrofit.Builder()

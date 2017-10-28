@@ -4,7 +4,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
 import com.alttech.afrsdk.Config;
-import com.alttech.afrsdk.PlaybackFragment;
+import com.alttech.afrsdk.views.PlaybackFragment;
 
 public class MainActivity extends AppCompatActivity {
 
