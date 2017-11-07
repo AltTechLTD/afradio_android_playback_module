@@ -115,10 +115,8 @@ class PlaybackFragment : Fragment(), View.OnClickListener, PlaybackPresenter.Pla
   }
 
   override fun removeItem(pos: Int) {
-    if (pos < list.size) {
-      list.removeAt(pos)
-      adapter.notifyItemRemoved(pos)
-    }
+    list.removeAt(pos)
+    adapter.notifyItemRemoved(pos)
   }
 
   override fun addPlaybackList(pos: Int, playbackList: PlaybackList) {
