@@ -9,6 +9,7 @@ import android.os.IBinder
 import android.support.v7.app.AppCompatActivity
 import android.text.TextUtils
 import android.util.Log
+import co.mobiwise.library.radio.RadioPlayerService
 import com.alttech.afrsdk.player.tiriton_ads.Params
 
 /**
@@ -16,7 +17,6 @@ import com.alttech.afrsdk.player.tiriton_ads.Params
  */
 object OpenMxManager : IRadioManager {
 
-  private var mContext: Context? = null
 
   private var playClass: Class<out AppCompatActivity>? = null
 
@@ -107,15 +107,15 @@ object OpenMxManager : IRadioManager {
     isLogging = logging
   }
 
-  override fun connect() {
+  override fun connect(context: Context) {
     log("Requested to connect service.")
-    val intent = Intent(mContext, RadioPlayerService::class.java)
-    mContext?.bindService(intent, mServiceConnection, Context.BIND_AUTO_CREATE)
+    val intent = Intent(context, RadioPlayerService::class.java)
+    context.bindService(intent, mServiceConnection, Context.BIND_AUTO_CREATE)
   }
 
-  override fun disconnect() {
+  override fun disconnect(context: Context) {
     log("Service Disconnected.")
-    mContext?.unbindService(mServiceConnection)
+    context.unbindService(mServiceConnection)
   }
 
 
@@ -138,7 +138,7 @@ object OpenMxManager : IRadioManager {
 
   fun initStream(url: String, params: Params?) {
     if (!TextUtils.isEmpty(url))
-      service?.initStream(url, params)
+      service?.initStream(url, true,  params)
   }
 
   private fun log(log: String) {
@@ -159,9 +159,4 @@ object OpenMxManager : IRadioManager {
 
   var service: RadioPlayerService? = null
     private set
-
-  fun with(mContext: Context): OpenMxManager {
-    OpenMxManager.mContext = mContext
-    return this
-  }
 }

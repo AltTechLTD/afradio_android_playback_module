@@ -40,18 +40,23 @@ class PlaybackPresenter(private val config: Config) {
   }
 
   fun getPlaybackList(show: Show, position: Int) {
-    val p = position - if (playbackListPosition < position) 1 else 0
-    val pos = p + (view!!.getColumnSize() - (p % view!!.getColumnSize()))
-    if (pos == playbackListPosition) return
     if (playbackListPosition > 0) view?.removeItem(playbackListPosition)
-    playbackListPosition = pos
-    view?.addPlaybackList(playbackListPosition, PlaybackList())
+
+    val col = if (position > playbackListPosition) position - 1 else position
+
+    val p = position - if (playbackListPosition < position) 1 else 0
+    playbackListPosition = p + (view!!.getColumnSize() - (p % view!!.getColumnSize()))
+    view?.addPlaybackList(playbackListPosition, PlaybackList(col % view!!.getColumnSize()))
   }
 
   interface PlaybackView {
     fun showWidgetData(data: WidgetDataResult)
+    fun loadDataError()
     fun removeItem(pos: Int)
     fun addPlaybackList(pos: Int, playbackList: PlaybackList)
     fun getColumnSize(): Int
+    fun progressView(show: Boolean)
+    fun showErrorText(txt: String)
+    fun getPlaybackPos(): Int
   }
 }

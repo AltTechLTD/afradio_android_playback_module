@@ -22,8 +22,8 @@
         android:paddingRight="8dp"
         android:paddingBottom="3dp"
         android:paddingTop="8dp"
-        android:text="joromi joro mi jor joromi joro mi jorjoromi joro mi jorjoromi joro mi jor"
-        android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"/>
+        android:text=""
+        android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"/>
 
     <TextView
         android:id="@+id/last_episode_date"
@@ -35,8 +35,9 @@
         android:paddingBottom="8dp"
         android:paddingLeft="8dp"
         android:paddingRight="8dp"
-        android:text="joromi joro mi jor joromi joro mi jorjoromi joro mi jorjoromi joro mi jor"
-        android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"/>
+        android:textSize="12sp"
+        android:text=""
+        />
 
 </RelativeLayout>
 

@@ -1,30 +1,36 @@
-package com.alttech.afrsdk.player
+package co.mobiwise.library.radio
 
-import android.app.Notification
-import android.app.NotificationManager
-import android.app.PendingIntent
-import android.app.Service
+import android.app.*
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.wifi.WifiManager
 import android.os.*
+import android.support.annotation.RequiresApi
+import android.support.v4.app.NotificationCompat
+import android.support.v4.content.ContextCompat
+import android.support.v4.media.app.NotificationCompat.MediaStyle
+import android.support.v4.media.session.MediaButtonReceiver
+import android.support.v4.media.session.PlaybackStateCompat
 import android.support.v7.app.AppCompatActivity
-import android.support.v7.app.NotificationCompat
 import android.telephony.PhoneStateListener
 import android.telephony.TelephonyManager
 import android.util.Log
+import com.alttech.afrsdk.player.RadioListener
+import com.alttech.afrsdk.player.openmxplayer.MediaPlayerApi
 import com.alttech.afrsdk.player.openmxplayer.OpenMXPlayerInterface
 import com.alttech.afrsdk.player.openmxplayer.PlayerEvents
 import com.alttech.afrsdk.player.openmxplayer.PlayerStates
 import com.alttech.afrsdk.player.tiriton_ads.Params
-import com.alttech.afrsdk.player.openmxplayer.MediaPlayerApi
 import java.util.*
 import java.util.concurrent.TimeUnit
 
 
 class RadioPlayerService : Service(), PlayerEvents {
+  override fun onStart(mime: String, sampleRate: Int, channels: Int, duration: Long) {
+    TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+  }
 
   internal var playActivity: Class<out AppCompatActivity>? = null
 
@@ -51,6 +57,22 @@ class RadioPlayerService : Service(), PlayerEvents {
 
   private var player: OpenMXPlayerInterface? = null
 
+  /**
+   * While current radio playing, if you give another play command with different
+   * source, you need to stop it first. This value is responsible for control
+   * after radio stopped.
+   */
+  //    private boolean isSwitching;
+
+  /**
+   * If closed from notification, it will be checked
+   * on Stop method and notification will not be created
+   */
+
+  /**
+   * Incoming calls interrupt radio if it is playing.
+   * Check if this is true or not after hang up;
+   */
   private var isInterrupted: Boolean = false
 
   internal var phoneStateListener: PhoneStateListener = object : PhoneStateListener() {
@@ -144,9 +166,17 @@ class RadioPlayerService : Service(), PlayerEvents {
   }
 
   fun stop() {
-    if (player != null)
+//    println("=============================== stop command in service. state -> ${mRadioState.state}")
+//    if (!(mRadioState.isStopped || mRadioState.isPaused)) {
+//      log("Stop requested.")
+//      player?.stop()
+//    }
+
+    if (player != null) {
       player?.stop()
-    else onStop()
+    } else {
+      onStop()
+    }
 
     stopForeground(true)
   }
@@ -171,8 +201,7 @@ class RadioPlayerService : Service(), PlayerEvents {
   }
 
 
-  private fun initPlayer() {
-
+  private fun initPlayer(seekable: Boolean) {
 
     player?.stop()
 
@@ -200,17 +229,24 @@ class RadioPlayerService : Service(), PlayerEvents {
     val cancelPending = PendingIntent.getService(this, 0, intentCancel, PendingIntent.FLAG_CANCEL_CURRENT)
     val openPending = PendingIntent.getService(this, 0, intentOpenPlayer, PendingIntent.FLAG_CANCEL_CURRENT)
 
-    notificationCompatBuilder = NotificationCompat.Builder(this)
 
     if (artImage == null)
-      artImage = BitmapFactory.decodeResource(resources, com.alttech.afrsdk.R.drawable.no_cover)
+      artImage = BitmapFactory.decodeResource(resources,  com.alttech.afrsdk.R.drawable.no_cover)
 
     smallImage = com.alttech.afrsdk.R.drawable.ic_stat_name
 
-    /**
-     * Create notification instance
-     */
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      createChannel(this)
+    }
+
+    notificationCompatBuilder = NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
+
     notificationCompatBuilder
+        ?.setColor(ContextCompat.getColor(this, com.alttech.afrsdk.R.color.red))
+        ?.setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+        ?.setOnlyAlertOnce(true)
+        ?.setDeleteIntent(MediaButtonReceiver.buildMediaButtonPendingIntent(
+            this, PlaybackStateCompat.ACTION_STOP))
         ?.setLargeIcon(artImage)
         ?.setSmallIcon(smallImage)
         ?.setContentTitle(stationName)
@@ -227,7 +263,13 @@ class RadioPlayerService : Service(), PlayerEvents {
           ?.addAction(
               if (isPlaying) com.alttech.afrsdk.R.drawable.ic_pause_black_24dp else com.alttech.afrsdk.R.drawable.ic_play_arrow_black_24dp,
               if (isPlaying) resources.getString(com.alttech.afrsdk.R.string.pause) else resources.getString(com.alttech.afrsdk.R.string.play), playPausePending)
-          ?.setStyle(NotificationCompat.MediaStyle().setShowActionsInCompactView(0, 1))
+          ?.setStyle(
+              MediaStyle()
+//                  .setMediaSession("")
+                  .setShowCancelButton(true)
+                  .setCancelButtonIntent(
+                      MediaButtonReceiver.buildMediaButtonPendingIntent(
+                          this, PlaybackStateCompat.ACTION_STOP)))
 
     notificationCompatBuilder?.setSubText("AF Radio")
 
@@ -238,10 +280,13 @@ class RadioPlayerService : Service(), PlayerEvents {
     if (startedForeground) {
       notificationManager?.notify(NOTIFICATION_ID, notificationCompatBuilder?.build())
     } else {
+      val intent = Intent(this, RadioPlayerService::class.java)
+      ContextCompat.startForegroundService(this, intent)
       startForeground(NOTIFICATION_ID, notificationCompatBuilder?.build())
       startedForeground = true
     }
   }
+
 
   private fun applyLollipopFunctionality(notificationCompatBuilder: NotificationCompat.Builder) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -277,8 +322,8 @@ class RadioPlayerService : Service(), PlayerEvents {
     this.playActivity = playActivity
   }
 
-  fun initStream(streamUrl: String, params: Params?) {
-    initPlayer()
+  fun initStream(streamUrl: String, seekable: Boolean, params: Params?) {
+    initPlayer(seekable)
 
     params?.let {
       player?.showAds(this, it)
@@ -317,13 +362,16 @@ class RadioPlayerService : Service(), PlayerEvents {
     playUpdateListeners?.remove(playUpdaterListener)
   }
 
-  override fun onStart(mime: String, sampleRate: Int, channels: Int, duration: Long) {
-    mListenerList?.let {
-      for (mRadioListener in it) {
-        mRadioListener.onRadioStarted(mime, sampleRate, channels, duration)
-      }
-    }
-  }
+//  fun updateNotification(stationName: String?, showName: String?, smallImage: Int, artImage: Int) {
+//    stationName?.let { this.stationName = it }
+//    showName?.let { this.showName = it }
+//    override fun onStart(mime: String, sampleRate: Int, channels: Int, duration: Long) {
+//      mListenerList?.let {
+//        for (mRadioListener in it) {
+//          mRadioListener.onRadioStarted(mime, sampleRate, channels, duration)
+//        }
+//      }
+//  }
 
   override fun onPlay() {
     playingAd = true
@@ -412,6 +460,24 @@ class RadioPlayerService : Service(), PlayerEvents {
     super.onDestroy()
   }
 
+  @RequiresApi(Build.VERSION_CODES.O)
+  private fun createChannel(context: Context) {
+    val mNotificationManager = context
+        .getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+    // The id of the channel.
+    val id = NOTIFICATION_CHANNEL_ID
+    // The user-visible name of the channel.
+    val name = "Media playback"
+    // The user-visible description of the channel.
+    val description = "Media playback controls"
+    val importance = NotificationManager.IMPORTANCE_LOW
+    val mChannel = NotificationChannel(id, name, importance)
+    mChannel.description = description
+    mChannel.setShowBadge(false)
+    mChannel.lockscreenVisibility = Notification.VISIBILITY_PUBLIC
+    mNotificationManager.createNotificationChannel(mChannel)
+  }
+
   /**
    * Binder
    */
@@ -422,12 +488,14 @@ class RadioPlayerService : Service(), PlayerEvents {
 
   companion object {
 
+
     val TAG = RadioPlayerService::class.java.simpleName
 
-    private val NOTIFICATION_INTENT_PLAY_PAUSE = "com.alttech.radio.INTENT_PLAYPAUSE"
-    private val NOTIFICATION_INTENT_CANCEL = "com.alttech.radio.INTENT_CANCEL"
-    val NOTIFICATION_INTENT_OPEN_PLAYER = "com.alttech.radio.INTENT_OPENPLAYER"
-    private val NOTIFICATION_ID = 49234
+    private val NOTIFICATION_INTENT_PLAY_PAUSE = "xyz.qoretech.radio.INTENT_PLAYPAUSE"
+    private val NOTIFICATION_INTENT_CANCEL = "xyz.qoretech.radio.INTENT_CANCEL"
+    val NOTIFICATION_INTENT_OPEN_PLAYER = "xyz.qoretech.radio.INTENT_OPENPLAYER"
+    private val NOTIFICATION_ID = 4921
+    private val NOTIFICATION_CHANNEL_ID = "alttech.Player.Notification"
     private var isLogging = false
   }
 }

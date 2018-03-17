@@ -1,6 +1,7 @@
 package com.alttech.afrsdk.player
 
 
+import android.content.Context
 import android.graphics.Bitmap
 
 /**
@@ -26,9 +27,9 @@ internal interface IRadioManager {
 
   fun setLogging(logging: Boolean)
 
-  fun connect()
+  fun connect(context: Context)
 
-  fun disconnect()
+  fun disconnect(context: Context)
 
   fun updateNotification(singerName: String?, songName: String?, smallArt: Int, bigArt: Int)
 
