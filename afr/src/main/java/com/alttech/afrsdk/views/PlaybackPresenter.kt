@@ -1,6 +1,7 @@
 package com.alttech.afrsdk.views
 
 import com.alttech.afrsdk.Config
+import com.alttech.afrsdk.data.Playback
 import com.alttech.afrsdk.data.PlaybackList
 import com.alttech.afrsdk.data.Show
 import com.alttech.afrsdk.data.WidgetDataResult
@@ -46,7 +47,7 @@ class PlaybackPresenter(private val config: Config) {
 
     val p = position - if (playbackListPosition < position) 1 else 0
     playbackListPosition = p + (view!!.getColumnSize() - (p % view!!.getColumnSize()))
-    view?.addPlaybackList(playbackListPosition, PlaybackList(col % view!!.getColumnSize()))
+    view?.addPlaybackList(playbackListPosition, PlaybackList(col % view!!.getColumnSize(), ArrayList(show.playback)))
   }
 
   interface PlaybackView {

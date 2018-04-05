@@ -1,0 +1,50 @@
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingLeft="2dp"
+    android:paddingTop="8dp"
+    android:paddingBottom="8dp"
+    android:paddingRight="2dp"
+    >
+
+    <TextView
+        android:id="@+id/play_count"
+        android:layout_width="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_height="wrap_content"
+        android:lines="1"
+        android:paddingBottom="8dp"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp"
+        android:paddingTop="8dp"
+        android:text="23 plays"
+        android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"/>
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@+id/play_icon"
+        android:layout_toLeftOf="@+id/play_count"
+        android:layout_toRightOf="@+id/play_icon"
+        android:layout_toStartOf="@+id/play_count"
+        android:lines="1"
+        android:paddingBottom="8dp"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp"
+        android:paddingTop="8dp"
+        android:text="16th March 2018, (3 days ago)"
+        android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"/>
+
+    <ImageView
+        android:id="@+id/play_icon"
+        android:layout_width="44dp"
+        android:layout_height="24dp"
+        android:layout_alignBottom="@+id/title"
+        android:layout_alignTop="@+id/title"
+        android:src="@drawable/ic_play_arrow_black_24dp"/>
+
+</RelativeLayout>
+

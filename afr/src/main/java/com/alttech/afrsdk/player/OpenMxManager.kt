@@ -138,7 +138,7 @@ object OpenMxManager : IRadioManager {
 
   fun initStream(url: String, params: Params?) {
     if (!TextUtils.isEmpty(url))
-      service?.initStream(url, true,  params)
+      service?.initStream(url, params)
   }
 
   private fun log(log: String) {

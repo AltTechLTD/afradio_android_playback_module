@@ -1,10 +1,11 @@
 package com.alttech.afrsdk.views
 
+import android.support.v4.app.FragmentManager
+import android.support.v4.view.ViewPager
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import android.widget.ImageView
 import android.widget.RelativeLayout
 import android.widget.TextView
@@ -13,14 +14,16 @@ import com.alttech.afrsdk.data.Playback
 import com.alttech.afrsdk.data.PlaybackList
 import com.alttech.afrsdk.data.Show
 import com.alttech.afrsdk.loadUrl
+import me.relex.circleindicator.CircleIndicator
+import java.io.Serializable
 
 /**
  * Created by bubu on 19/10/2017.
  */
 
-class ShowsAdapter(val data: List<*>, val adapterInterface: ShowAdapterInterface) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class ShowsAdapter(val fm: FragmentManager, val data: List<*>, val adapterInterface: ShowAdapterInterface) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-  val SHOW_TYPE = 1
+  private val SHOW_TYPE = 1
   private val SHOW_PLAYBACKS = 2
 
   override fun getItemViewType(position: Int): Int {
@@ -44,25 +47,27 @@ class ShowsAdapter(val data: List<*>, val adapterInterface: ShowAdapterInterface
         val show = data[position] as Show
         show.imgUrl?.let { holder.img?.loadUrl(it) }
         show.name?.let { holder.showName?.text = it }
-        show.createdAt?.let { holder.lastEpisode?.text = it }
+//        show.createdAt?.let { holder.lastEpisode?.text = it }
       }
 
       is PlaybackHolder -> {
         val playbackList = data[position] as PlaybackList
-        println(">>>>>>>>"+ playbackList.itemColumn)
         holder.columnList.forEachIndexed { index, relativeLayout ->
           if (index == playbackList.itemColumn)
             relativeLayout?.visibility = View.VISIBLE
           else
             relativeLayout?.visibility = View.INVISIBLE
         }
-        holder.pageCounter?.text = "Page ${playbackList.currentPage} of ${playbackList.totalPages}"
 
-        if (playbackList.currentPage == 1) holder.previous?.visibility = View.INVISIBLE
-        else holder.previous?.visibility = View.VISIBLE
 
-        if (playbackList.currentPage == playbackList.totalPages) holder.next?.visibility = View.INVISIBLE
-        else holder.next?.visibility = View.VISIBLE
+        println(">>>>>playback count" + playbackList.playbacks?.size)
+
+
+        holder.viewPager?.adapter = PlaybackPagerAdapter(fm, playbackList.playbacks!!, adapterInterface)
+        holder.viewPager?.clipToPadding = false;
+        holder.viewPager?.pageMargin = 12;
+        holder.indicator?.setViewPager(holder.viewPager)
+
 
       }
     }
@@ -80,7 +85,7 @@ class ShowsAdapter(val data: List<*>, val adapterInterface: ShowAdapterInterface
     init {
       img = itemView.findViewById<ImageView>(R.id.show_img)
       showName = itemView.findViewById<TextView>(R.id.show_name)
-      lastEpisode = itemView.findViewById<TextView>(R.id.last_episode_date)
+//      lastEpisode = itemView.findViewById<TextView>(R.id.last_episode_date)
       itemView.setOnClickListener {
         adapterInterface.expandPlayback(data[adapterPosition] as Show, adapterPosition)
       }
@@ -95,13 +100,8 @@ class ShowsAdapter(val data: List<*>, val adapterInterface: ShowAdapterInterface
 
     var columnList: ArrayList<RelativeLayout?>
 
-    private var recyclerView: RecyclerView? = null
-
-    var pageCounter: TextView? = null
-
-    var next: Button? = null
-    var previous: Button? = null
-
+    var viewPager: ViewPager? = null
+    var indicator: CircleIndicator? = null
 
     init {
       column1 = itemView.findViewById<RelativeLayout>(R.id.column_1)
@@ -109,18 +109,15 @@ class ShowsAdapter(val data: List<*>, val adapterInterface: ShowAdapterInterface
       column3 = itemView.findViewById<RelativeLayout>(R.id.column_3)
       columnList = arrayListOf(column1, column2, column3)
 
-      recyclerView = itemView.findViewById<RecyclerView>(R.id.recycler_view)
-
-      pageCounter = itemView.findViewById<TextView>(R.id.page_count)
-      next = itemView.findViewById<Button>(R.id.next)
-      previous = itemView.findViewById<Button>(R.id.previous)
-
+      viewPager = itemView.findViewById<ViewPager>(R.id.view_pager)
+      indicator = itemView.findViewById<CircleIndicator>(R.id.indicator)
     }
 
   }
 
-  interface ShowAdapterInterface {
+  interface ShowAdapterInterface : Serializable {
     fun expandPlayback(show: Show, position: Int)
     fun playLastEpisode(playback: Playback)
+    fun play(playback: Playback?)
   }
 }

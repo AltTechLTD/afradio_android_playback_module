@@ -20,6 +20,9 @@ import com.alttech.afrsdk.toPx
 
 
 class PlaybackFragment : Fragment(), View.OnClickListener, PlaybackPresenter.PlaybackView, ShowsAdapter.ShowAdapterInterface {
+  override fun play(playback: Playback?) {
+  }
+
   override fun loadDataError() {
     retry?.visibility = View.VISIBLE
   }
@@ -50,7 +53,7 @@ class PlaybackFragment : Fragment(), View.OnClickListener, PlaybackPresenter.Pla
 
   val list: ArrayList<Any?> = ArrayList()
 
-  val adapter = ShowsAdapter(list, this)
+  lateinit var adapter:ShowsAdapter
 
   var playbackPosition = -1
 
@@ -66,6 +69,7 @@ class PlaybackFragment : Fragment(), View.OnClickListener, PlaybackPresenter.Pla
     super.onCreate(savedInstanceState)
     this.config = arguments?.getSerializable("config") as Config
     presenter = PlaybackPresenter(config!!)
+    adapter = ShowsAdapter(childFragmentManager, list, this)
   }
 
   override fun onStart() {

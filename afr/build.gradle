@@ -42,8 +42,11 @@ dependencies {
     compile 'com.squareup.retrofit2:converter-moshi:2.3.0'
     compile 'com.squareup.moshi:moshi-kotlin:1.5.0'
     compile 'com.squareup.okhttp3:logging-interceptor:3.10.0'
+    compile 'me.relex:circleindicator:1.2.2@aar'
 
 }
 repositories {
     mavenCentral()
 }
+
+apply plugin: 'kotlin-android-extensions'

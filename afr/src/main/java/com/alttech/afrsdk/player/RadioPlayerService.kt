@@ -201,7 +201,7 @@ class RadioPlayerService : Service(), PlayerEvents {
   }
 
 
-  private fun initPlayer(seekable: Boolean) {
+  private fun initPlayer() {
 
     player?.stop()
 
@@ -322,8 +322,8 @@ class RadioPlayerService : Service(), PlayerEvents {
     this.playActivity = playActivity
   }
 
-  fun initStream(streamUrl: String, seekable: Boolean, params: Params?) {
-    initPlayer(seekable)
+  fun initStream(streamUrl: String, params: Params?) {
+    initPlayer()
 
     params?.let {
       player?.showAds(this, it)
