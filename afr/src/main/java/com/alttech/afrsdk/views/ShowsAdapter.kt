@@ -60,9 +60,6 @@ class ShowsAdapter(val fm: FragmentManager, val data: List<*>, val adapterInterf
         }
 
 
-        println(">>>>>playback count" + playbackList.playbacks?.size)
-
-
         holder.viewPager?.adapter = PlaybackPagerAdapter(fm, playbackList.playbacks!!, adapterInterface)
         holder.viewPager?.clipToPadding = false;
         holder.viewPager?.pageMargin = 12;

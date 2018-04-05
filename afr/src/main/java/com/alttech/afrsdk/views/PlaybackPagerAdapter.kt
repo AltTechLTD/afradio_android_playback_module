@@ -10,7 +10,7 @@ import com.alttech.afrsdk.data.Playback
  */
 
 class PlaybackPagerAdapter
-(fragmentManager: FragmentManager, private val list: ArrayList<Playback>, val callback: ShowsAdapter.ShowAdapterInterface) : FragmentPagerAdapter(fragmentManager) {
+(fragmentManager: FragmentManager, private val list: ArrayList<Playback>, private val callback: ShowsAdapter.ShowAdapterInterface) : FragmentPagerAdapter(fragmentManager) {
 
   // Returns total number of pages
   override fun getCount(): Int {

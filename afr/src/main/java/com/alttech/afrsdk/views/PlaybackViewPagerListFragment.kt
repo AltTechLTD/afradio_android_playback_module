@@ -39,6 +39,7 @@ class PlaybackViewPagerListFragment : Fragment() {
     recyclerView.adapter = adapter
 
 
+    recyclerView.addItemDecoration(DividerItemDecoration(context!!))
 
     return view
   }
