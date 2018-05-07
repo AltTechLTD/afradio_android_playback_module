@@ -1,0 +1,187 @@
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/black">
+
+    <RelativeLayout
+        android:id="@+id/album_art_viewpager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/bottom_bar">
+
+
+        <ImageView
+            android:id="@+id/background"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/black_tint"/>
+
+        <FrameLayout
+            android:id="@+id/frag"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="80dp"
+            android:layout_marginTop="18dp"
+            />
+
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/bottom_status"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/bottom_bar"
+        android:background="@drawable/grad_bckg_onair"
+        android:paddingBottom="10dp"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"
+        android:paddingTop="30dp">
+
+        <TextView
+            android:id="@+id/program_name_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_marginBottom="2dp"
+            android:layout_marginTop="2dp"
+            android:gravity="center_vertical"
+            android:lines="1"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="@color/white"/>
+
+        <com.alttech.afrsdk.views.RelativeTimeTextView
+            android:id="@+id/station_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/program_name_text_view"
+            android:layout_marginBottom="2dp"
+            android:layout_marginTop="2dp"
+            android:gravity="center_vertical"
+            android:lines="1"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="@color/white"/>
+
+
+    </RelativeLayout>
+
+
+    <RelativeLayout
+        android:id="@+id/bottom_bar"
+        android:layout_width="match_parent"
+        android:layout_height="110dp"
+        android:layout_alignParentBottom="true"
+        android:background="@color/colorPrimaryDark"
+        android:gravity="center_vertical">
+
+
+        <TextView
+            android:id="@+id/progress_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginLeft="12dp"
+            android:layout_marginRight="12dp"
+            android:layout_marginTop="-8dp"
+            android:textColor="@color/white"/>
+
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true">
+
+
+            <ImageView
+                android:id="@+id/play_action"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
+                android:layout_toEndOf="@+id/rewind_button"
+                android:layout_toRightOf="@+id/rewind_button"
+                android:src="@drawable/ic_play_circle_filled"/>
+
+            <!--<com.pnikosis.materialishprogress.ProgressWheel-->
+                <!--android:id="@+id/progress_wheel"-->
+                <!--android:layout_width="72dp"-->
+                <!--android:layout_height="72dp"-->
+                <!--android:layout_centerVertical="true"-->
+                <!--android:layout_marginLeft="8dp"-->
+                <!--android:layout_marginRight="8dp"-->
+                <!--android:layout_toEndOf="@+id/rewind_button"-->
+                <!--android:layout_toRightOf="@+id/rewind_button"-->
+                <!--android:padding="8dp"-->
+                <!--android:visibility="gone"-->
+                <!--app:matProg_barColor="@color/white"-->
+                <!--app:matProg_progressIndeterminate="true"/>-->
+
+
+            <ImageView
+                android:id="@+id/forward_action"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="18dp"
+                android:layout_marginRight="18dp"
+                android:layout_toEndOf="@+id/play_action"
+                android:layout_toRightOf="@+id/play_action"
+                android:padding="4dp"
+                android:src="@drawable/ic_forward_30_white"/>
+
+            <ImageView
+                android:id="@+id/rewind_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="18dp"
+                android:layout_marginRight="18dp"
+                android:padding="4dp"
+                android:src="@drawable/ic_replay_10_white"/>
+
+
+        </RelativeLayout>
+
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/progress_tracker"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/bottom_bar"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="25dp"
+        android:background="@drawable/rounded_button_background"
+        android:paddingBottom="8dp"
+        android:paddingLeft="18dp"
+        android:paddingRight="18dp"
+        android:paddingTop="8dp"
+        android:text="23/34"
+        android:textColor="@color/black"
+        android:visibility="gone"/>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_above="@+id/bottom_bar"
+        android:layout_alignBottom="@+id/album_art_viewpager"
+        android:layout_marginBottom="-20dp">
+
+        <SeekBar
+            android:id="@+id/seek_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"/>
+    </FrameLayout>
+</RelativeLayout>

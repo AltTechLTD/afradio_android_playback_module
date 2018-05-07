@@ -12,14 +12,21 @@ import android.view.ViewGroup
 import android.widget.Button
 import com.alttech.afrsdk.Config
 import com.alttech.afrsdk.R
-import com.alttech.afrsdk.data.Playback
-import com.alttech.afrsdk.data.PlaybackList
-import com.alttech.afrsdk.data.Show
-import com.alttech.afrsdk.data.WidgetDataResult
+import com.alttech.afrsdk.data.*
 import com.alttech.afrsdk.toPx
 
 
 class PlaybackFragment : Fragment(), View.OnClickListener, PlaybackPresenter.PlaybackView, ShowsAdapter.ShowAdapterInterface {
+
+  override fun addMoreDataListener(data: ShowsAdapter.OnMoreData) {
+    listeners.add(data)
+  }
+
+  override fun showMoreData(showId: String, data: LoadMoreDataResult) {
+    listeners.forEach { it.showMoreData(showId, data) }
+  }
+
+
   override fun play(playback: Playback?) {
   }
 
@@ -30,7 +37,6 @@ class PlaybackFragment : Fragment(), View.OnClickListener, PlaybackPresenter.Pla
   override fun getPlaybackPos() = playbackPosition
 
   override fun progressView(show: Boolean) {
-    TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
   }
 
   override fun showErrorText(txt: String) {
@@ -54,6 +60,8 @@ class PlaybackFragment : Fragment(), View.OnClickListener, PlaybackPresenter.Pla
   val list: ArrayList<Any?> = ArrayList()
 
   lateinit var adapter:ShowsAdapter
+  val listeners = ArrayList<ShowsAdapter.OnMoreData>()
+
 
   var playbackPosition = -1
 
@@ -69,7 +77,7 @@ class PlaybackFragment : Fragment(), View.OnClickListener, PlaybackPresenter.Pla
     super.onCreate(savedInstanceState)
     this.config = arguments?.getSerializable("config") as Config
     presenter = PlaybackPresenter(config!!)
-    adapter = ShowsAdapter(childFragmentManager, list, this)
+    adapter = ShowsAdapter(list, this)
   }
 
   override fun onStart() {
@@ -90,14 +98,14 @@ class PlaybackFragment : Fragment(), View.OnClickListener, PlaybackPresenter.Pla
 
     val bottomSheet = view?.findViewById<View>(R.id.bottom_sheet);
 
-    recyclerView = view?.findViewById<RecyclerView>(R.id.recycler_view)
+    recyclerView = view?.findViewById(R.id.recycler_view)
 
-    retry = view?.findViewById<Button>(R.id.retry)
+    retry = view?.findViewById(R.id.retry)
 
-    retry?.setOnClickListener({ v ->
+    retry?.setOnClickListener { v ->
       list.clear()
       presenter?.fetchWidgetData()
-    })
+    }
 
     columnSizeX = 3
 
@@ -137,13 +145,15 @@ class PlaybackFragment : Fragment(), View.OnClickListener, PlaybackPresenter.Pla
   }
 
 
+  override fun loadMore(showId: String?, offsett: Int, limit: Int) {
+    presenter?.loadMore(showId, offsett, limit)
+  }
+
+
   override fun expandPlayback(show: Show, position: Int) {
     presenter?.getPlaybackList(show, position)
   }
 
-  override fun playLastEpisode(playback: Playback) {
-    TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-  }
 
   override fun removeItem(pos: Int) {
     list.removeAt(pos)

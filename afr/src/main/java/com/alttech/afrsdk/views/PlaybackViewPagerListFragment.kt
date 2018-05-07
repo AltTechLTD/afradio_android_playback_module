@@ -18,14 +18,14 @@ import com.alttech.afrsdk.data.Playback
  */
 class PlaybackViewPagerListFragment : Fragment() {
 
-  var list: ArrayList<Playback>? = null
+  val list = ArrayList<Playback>()
   var callback: ShowsAdapter.ShowAdapterInterface? = null
+  var adapter: PlaybackItemAdapter? = null
 
 
   // Store instance variables based on arguments passed
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-    list = arguments?.getParcelableArrayList("list")
     callback = arguments?.getSerializable("callback") as ShowsAdapter.ShowAdapterInterface?
   }
 
@@ -34,7 +34,7 @@ class PlaybackViewPagerListFragment : Fragment() {
     // Inflate the layout for this fragment
     val view = inflater.inflate(R.layout.fragment_playback_view_pager_list, container, false)
     val recyclerView = view.findViewById<RecyclerView>(R.id.recycler_view)
-    val adapter = PlaybackItemAdapter(list, callback)
+    adapter = PlaybackItemAdapter(list, callback)
     recyclerView.layoutManager = LinearLayoutManager(recyclerView.context)
     recyclerView.adapter = adapter
 
@@ -44,11 +44,16 @@ class PlaybackViewPagerListFragment : Fragment() {
     return view
   }
 
+  fun setPlaybackData(playbackList: ArrayList<Playback>) {
+    list.clear()
+    list.addAll(playbackList)
+    adapter?.notifyDataSetChanged()
+  }
+
   companion object {
-    fun newInstance(playbackList: ArrayList<Playback>, callback: ShowsAdapter.ShowAdapterInterface): PlaybackViewPagerListFragment {
+    fun newInstance(callback: ShowsAdapter.ShowAdapterInterface): PlaybackViewPagerListFragment {
       val fragmentFirst = PlaybackViewPagerListFragment()
       val args = Bundle()
-      args.putParcelableArrayList("list", playbackList)
       args.putSerializable("callback", callback)
       fragmentFirst.arguments = args
       return fragmentFirst

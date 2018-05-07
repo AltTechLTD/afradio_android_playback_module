@@ -6,6 +6,7 @@ package com.alttech.afrsdk.network
 
 
 import com.alttech.afrsdk.BuildConfig
+import com.alttech.afrsdk.data.LoadMoreDataResult
 import com.alttech.afrsdk.data.WidgetDataResult
 import com.squareup.moshi.KotlinJsonAdapterFactory
 import com.squareup.moshi.Moshi
@@ -26,6 +27,9 @@ interface ApiService {
 
   @GET("api/widget/station")
   fun getShows(@Query("appId") appId: String, @Query("resId") resId: String): Observable<WidgetDataResult>
+
+  @GET("api/widget/loadmore")
+  fun loadMore(@Query("appId") appId: String, @Query("show") showId: String, @Query("offsett") offset: Int, @Query("limit") limit: Int): Observable<LoadMoreDataResult>
 
   @GET("api/ad_credentials")
   fun getAdCredentials(): Observable<String>
