@@ -2,6 +2,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:padding="2dp">
 
     <LinearLayout
@@ -67,10 +68,12 @@
 
     <me.relex.circleindicator.CircleIndicator
         android:id="@+id/indicator"
-        android:layout_height="12dp"
         android:layout_width="match_parent"
+        android:layout_height="22dp"
         android:layout_alignParentBottom="true"
-        android:layout_marginBottom="12dp"/>
+        app:ci_drawable="@drawable/black_radius"
+        android:gravity="center"
+        />
 
     <com.alttech.afrsdk.views.MyViewPager
         android:id="@+id/view_pager"
@@ -81,7 +84,7 @@
         android:layout_below="@+id/top_arrow"
         android:gravity="center"
         android:paddingLeft="18dp"
-        android:layout_marginBottom="12dp"
+        android:layout_marginBottom="22dp"
         android:paddingRight="12dp"/>
 
 

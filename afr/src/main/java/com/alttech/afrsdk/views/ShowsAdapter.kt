@@ -70,6 +70,8 @@ class ShowsAdapter(val data: List<*>, val adapterInterface: ShowAdapterInterface
         holder.viewPager?.pageMargin = 12
         holder.indicator?.setViewPager(holder.viewPager)
 
+        pagerAdapter.registerDataSetObserver(holder.indicator!!.getDataSetObserver());
+
       }
     }
 
