@@ -1,4 +1,4 @@
-package co.mobiwise.library.radio
+package com.alttech.afrsdk.player
 
 import android.app.*
 import android.content.Context
@@ -17,7 +17,6 @@ import android.support.v7.app.AppCompatActivity
 import android.telephony.PhoneStateListener
 import android.telephony.TelephonyManager
 import android.util.Log
-import com.alttech.afrsdk.player.RadioListener
 import com.alttech.afrsdk.player.openmxplayer.MediaPlayerApi
 import com.alttech.afrsdk.player.openmxplayer.OpenMXPlayerInterface
 import com.alttech.afrsdk.player.openmxplayer.PlayerEvents
@@ -29,7 +28,6 @@ import java.util.concurrent.TimeUnit
 
 class RadioPlayerService : Service(), PlayerEvents {
   override fun onStart(mime: String, sampleRate: Int, channels: Int, duration: Long) {
-    TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
   }
 
   internal var playActivity: Class<out AppCompatActivity>? = null
@@ -488,14 +486,11 @@ class RadioPlayerService : Service(), PlayerEvents {
 
   companion object {
 
-
-    val TAG = RadioPlayerService::class.java.simpleName
-
-    private val NOTIFICATION_INTENT_PLAY_PAUSE = "xyz.qoretech.radio.INTENT_PLAYPAUSE"
-    private val NOTIFICATION_INTENT_CANCEL = "xyz.qoretech.radio.INTENT_CANCEL"
-    val NOTIFICATION_INTENT_OPEN_PLAYER = "xyz.qoretech.radio.INTENT_OPENPLAYER"
-    private val NOTIFICATION_ID = 4921
-    private val NOTIFICATION_CHANNEL_ID = "alttech.Player.Notification"
+    private const val NOTIFICATION_INTENT_PLAY_PAUSE = "xyz.alttech.afr.widget.INTENT_PLAYPAUSE"
+    private const val NOTIFICATION_INTENT_CANCEL = "xyz.alttech.afr.widget.INTENT_CANCEL"
+    const val NOTIFICATION_INTENT_OPEN_PLAYER = "xyz.alttech.afr.widget.INTENT_OPENPLAYER"
+    private const val NOTIFICATION_ID = 4924
+    private const val NOTIFICATION_CHANNEL_ID = "alttech.Player.Notification"
     private var isLogging = false
   }
 }

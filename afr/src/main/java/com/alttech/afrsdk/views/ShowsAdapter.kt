@@ -64,7 +64,9 @@ class ShowsAdapter(val data: List<*>, val adapterInterface: ShowAdapterInterface
         holder.viewPager?.adapter = pagerAdapter
 
 
-        pagerAdapter.addPlaybackData(holder.viewPager?.context, playbackList)
+        pagerAdapter.addPlaybackData(holder.viewPager?.context,  playbackList){
+          holder.viewPager?.currentItem = it
+        }
 
         holder.viewPager?.clipToPadding = false
         holder.viewPager?.pageMargin = 12
@@ -120,12 +122,12 @@ class ShowsAdapter(val data: List<*>, val adapterInterface: ShowAdapterInterface
 
   interface ShowAdapterInterface : Serializable {
     fun expandPlayback(show: Show, position: Int)
-    fun play(playback: Playback?)
+    fun play(show: Show, playback: Playback?)
     fun loadMore(showId: String?, offset: Int, limit: Int)
     fun addMoreDataListener(data: OnMoreData)
   }
 
   interface OnMoreData : Serializable {
-    fun showMoreData(showId:String, data: LoadMoreDataResult)
+    fun showMoreData(showId :String, data: LoadMoreDataResult)
   }
 }

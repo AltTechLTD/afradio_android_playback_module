@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import com.alttech.afrsdk.R
 import com.alttech.afrsdk.data.Playback
+import com.alttech.afrsdk.data.Show
 import com.alttech.afrsdk.fromISO8601UTC
 import java.text.SimpleDateFormat
 import java.util.*
@@ -16,7 +17,7 @@ import java.util.*
  * Created by bubu on 19/10/2017.
  */
 
-class PlaybackItemAdapter(val data: ArrayList<Playback>?, val adapterInterface: ShowsAdapter.ShowAdapterInterface?) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class PlaybackItemAdapter(val show: Show, val data: ArrayList<Playback>?, val adapterInterface: ShowsAdapter.ShowAdapterInterface?) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
 
   override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
@@ -52,7 +53,7 @@ class PlaybackItemAdapter(val data: ArrayList<Playback>?, val adapterInterface: 
       playCount = itemView.findViewById(R.id.play_count)
 
       itemView.setOnClickListener {
-        adapterInterface?.play(data?.get(adapterPosition))
+        adapterInterface?.play(show, data?.get(adapterPosition))
       }
     }
 

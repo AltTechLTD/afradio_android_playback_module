@@ -6,6 +6,7 @@ import android.graphics.Canvas
 import android.graphics.drawable.Drawable
 import android.support.v4.content.ContextCompat
 import android.support.v7.widget.RecyclerView
+import android.view.View
 import android.widget.ImageView
 import com.squareup.picasso.Picasso
 import java.text.ParseException
@@ -32,6 +33,16 @@ fun fromISO8601UTC(dateStr: String): Date? {
     e.printStackTrace()
   }
   return null
+}
+
+fun Date.toHumanReadable(): String {
+  val dateFormat = SimpleDateFormat("EEE, dd MMM, yyyy, H:mm a", Locale.getDefault());
+  return dateFormat.format(this.getTime())
+}
+
+
+fun View.setVisibility(visible: Boolean) {
+  this.visibility = if (visible) View.VISIBLE else View.GONE
 }
 
 

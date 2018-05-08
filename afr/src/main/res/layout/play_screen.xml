@@ -2,77 +2,97 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/black">
+    android:background="@color/white">
 
     <RelativeLayout
-        android:id="@+id/album_art_viewpager"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_above="@+id/bottom_bar">
-
+        android:id="@+id/peek_view"
+        android:layout_height="80dp"
+        android:background="#f2f3f5"
+        >
 
         <ImageView
-            android:id="@+id/background"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:scaleType="centerCrop"/>
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@color/black_tint"/>
-
-        <FrameLayout
-            android:id="@+id/frag"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginBottom="80dp"
-            android:layout_marginTop="18dp"
-            />
-
-
-    </RelativeLayout>
-
-    <RelativeLayout
-        android:id="@+id/bottom_status"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/bottom_bar"
-        android:background="@drawable/grad_bckg_onair"
-        android:paddingBottom="10dp"
-        android:paddingLeft="20dp"
-        android:paddingRight="20dp"
-        android:paddingTop="30dp">
+            android:id="@+id/small_image"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:background="@color/light_grey"/>
 
         <TextView
-            android:id="@+id/program_name_text_view"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_marginBottom="2dp"
-            android:layout_marginTop="2dp"
+            android:layout_toRightOf="@+id/small_image"
             android:gravity="center_vertical"
-            android:lines="1"
+            android:layout_toLeftOf="@+id/small_play"
+            android:text="Not Playing"
+            android:id="@+id/small_title"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textColor="@color/white"/>
-
-        <com.alttech.afrsdk.views.RelativeTimeTextView
-            android:id="@+id/station_name"
-            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_below="@+id/program_name_text_view"
-            android:layout_marginBottom="2dp"
-            android:layout_marginTop="2dp"
-            android:gravity="center_vertical"
-            android:lines="1"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:textColor="@color/white"/>
+            android:layout_centerVertical="true"
+            />
 
+        <ImageView
+            android:id="@+id/small_play"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_centerVertical="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:src="@drawable/ic_play_arrow_black_24dp"
+            />
 
     </RelativeLayout>
+
+    <ImageView
+        android:id="@+id/cover"
+        android:layout_width="240dp"
+        android:layout_height="240dp"
+        android:layout_above="@+id/seek_bar"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="30dp"
+        android:background="@color/black_light"/>
+
+    <TextView
+        android:id="@+id/program_name_text_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/date"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginBottom="5dp"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        android:gravity="center"
+        android:lines="1"
+        android:text="--"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        />
+
+    <com.alttech.afrsdk.views.RelativeTimeTextView
+        android:id="@+id/date"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/expdate"
+        android:layout_marginBottom="5dp"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        android:gravity="center"
+        android:text="--"
+        android:textAppearance="?android:attr/textAppearanceMedium"/>
+
+    <TextView
+        android:id="@+id/expdate"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/cover"
+        android:layout_marginBottom="30dp"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        android:gravity="center"
+        android:text="--"
+        android:textAppearance="?android:attr/textAppearanceSmall"/>
 
 
     <RelativeLayout
@@ -80,20 +100,9 @@
         android:layout_width="match_parent"
         android:layout_height="110dp"
         android:layout_alignParentBottom="true"
-        android:background="@color/colorPrimaryDark"
         android:gravity="center_vertical">
 
 
-        <TextView
-            android:id="@+id/progress_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
-            android:layout_marginLeft="12dp"
-            android:layout_marginRight="12dp"
-            android:layout_marginTop="-8dp"
-            android:textColor="@color/white"/>
 
 
         <RelativeLayout
@@ -159,29 +168,38 @@
         android:id="@+id/progress_tracker"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/bottom_bar"
+        android:layout_above="@+id/seek_bar"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="25dp"
+        android:layout_marginBottom="20dp"
         android:background="@drawable/rounded_button_background"
         android:paddingBottom="8dp"
         android:paddingLeft="18dp"
         android:paddingRight="18dp"
         android:paddingTop="8dp"
         android:text="23/34"
+        android:visibility="gone"
         android:textColor="@color/black"
-        android:visibility="gone"/>
+        />
 
-    <FrameLayout
+    <SeekBar
+        android:id="@+id/seek_bar"
         android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:layout_above="@+id/bottom_bar"
-        android:layout_alignBottom="@+id/album_art_viewpager"
-        android:layout_marginBottom="-20dp">
+        android:layout_above="@id/progress_text"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_marginLeft="30dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginRight="30dp"/>
 
-        <SeekBar
-            android:id="@+id/seek_bar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"/>
-    </FrameLayout>
+    <TextView
+        android:id="@+id/progress_text"
+        android:layout_width="wrap_content"
+        android:layout_above="@+id/bottom_bar"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="12dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginRight="12dp"
+        android:text="--:--"
+        />
+
 </RelativeLayout>

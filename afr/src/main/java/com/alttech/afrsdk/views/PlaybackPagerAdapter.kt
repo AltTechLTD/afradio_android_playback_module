@@ -14,6 +14,7 @@ import com.alttech.afrsdk.DividerItemDecoration
 import com.alttech.afrsdk.R
 import com.alttech.afrsdk.data.LoadMoreDataResult
 import com.alttech.afrsdk.data.PlaybackList
+import com.alttech.afrsdk.data.Show
 
 /**
  * Created by bubu on 17/03/2018.
@@ -27,6 +28,11 @@ class PlaybackPagerAdapter(private val callback: ShowsAdapter.ShowAdapterInterfa
 
   private var arrowPos = 0
   private var offset = 0
+  private  var show: Show? = null
+
+  private var setpage = fun(page: Int) {
+
+  }
 
   //
   init {
@@ -34,7 +40,8 @@ class PlaybackPagerAdapter(private val callback: ShowsAdapter.ShowAdapterInterfa
       override fun showMoreData(showId: String, data: LoadMoreDataResult) {
         if (views.size > 0) {
           val v = getView(views.size - 1)
-          addPlaybackData(v.context, PlaybackList(arrowPos, showId, ArrayList(data.playbacks), data.offsett, data.count))
+          addPlaybackData(v.context, PlaybackList(arrowPos, show, ArrayList(data.playbacks), data.offsett, data.count))
+//          setpage(views.size - 1)
         }
       }
     })
@@ -80,9 +87,17 @@ class PlaybackPagerAdapter(private val callback: ShowsAdapter.ShowAdapterInterfa
   fun getView(position: Int) = views.get(position)
 
 
-  fun addPlaybackData(context: Context?, playbackList: PlaybackList) {
+  private fun addPlaybackData(context: Context?, playbackList: PlaybackList) {
+    addPlaybackData(context, playbackList, setpage)
+  }
+
+
+  fun addPlaybackData(context: Context?, playbackList: PlaybackList, sp: (page: Int) -> Unit) {
+
+    this.setpage = sp
 
     arrowPos = playbackList.itemColumn
+    show = playbackList.show
 
 
     val inflater = context?.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
@@ -91,7 +106,7 @@ class PlaybackPagerAdapter(private val callback: ShowsAdapter.ShowAdapterInterfa
       views.clear()
       val lm = inflater.inflate(R.layout.fragment_playback_loadmore, null) as FrameLayout
       lm.findViewById<Button>(R.id.load_more).setOnClickListener {
-        callback.loadMore(playbackList.showId, playbackList.offsett + playbackList.count, limit)
+        callback.loadMore(playbackList.show?.id, playbackList.offsett + playbackList.count, limit)
       }
 
       this.addView(lm, 0)
@@ -101,7 +116,7 @@ class PlaybackPagerAdapter(private val callback: ShowsAdapter.ShowAdapterInterfa
 
     val view = inflater.inflate(R.layout.fragment_playback_view_pager_list, null) as FrameLayout
     val recyclerView = view.findViewById<RecyclerView>(R.id.recycler_view)
-    val adapter = PlaybackItemAdapter(playbackList.playbacks, callback)
+    val adapter = PlaybackItemAdapter(playbackList.show!!, playbackList.playbacks, callback)
     recyclerView.layoutManager = LinearLayoutManager(recyclerView.context)
     recyclerView.adapter = adapter
 

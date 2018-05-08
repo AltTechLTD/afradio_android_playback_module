@@ -34,12 +34,12 @@ class PlaybackViewPagerListFragment : Fragment() {
     // Inflate the layout for this fragment
     val view = inflater.inflate(R.layout.fragment_playback_view_pager_list, container, false)
     val recyclerView = view.findViewById<RecyclerView>(R.id.recycler_view)
-    adapter = PlaybackItemAdapter(list, callback)
-    recyclerView.layoutManager = LinearLayoutManager(recyclerView.context)
-    recyclerView.adapter = adapter
-
-
-    recyclerView.addItemDecoration(DividerItemDecoration(context!!))
+//    adapter = PlaybackItemAdapter(list, callback)
+//    recyclerView.layoutManager = LinearLayoutManager(recyclerView.context)
+//    recyclerView.adapter = adapter
+//
+//
+//    recyclerView.addItemDecoration(DividerItemDecoration(context!!))
 
     return view
   }

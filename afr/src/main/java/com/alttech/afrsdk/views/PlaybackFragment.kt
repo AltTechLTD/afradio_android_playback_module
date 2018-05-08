@@ -5,45 +5,35 @@ import android.support.design.widget.BottomSheetBehavior
 import android.support.v4.app.Fragment
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.util.DisplayMetrics
+import android.text.format.DateUtils
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import com.alttech.afrsdk.Config
-import com.alttech.afrsdk.R
+import android.view.animation.DecelerateInterpolator
+import android.widget.*
+import com.alttech.afrsdk.*
 import com.alttech.afrsdk.data.*
-import com.alttech.afrsdk.toPx
+import com.alttech.afrsdk.player.RadioListener
+import com.alttech.afrsdk.player.StreamManagerImpl
 
 
-class PlaybackFragment : Fragment(), View.OnClickListener, PlaybackPresenter.PlaybackView, ShowsAdapter.ShowAdapterInterface {
+class PlaybackFragment : Fragment(), View.OnClickListener, PlaybackPresenter.PlaybackView, ShowsAdapter.ShowAdapterInterface, RadioListener.PlayUpdaterListener {
 
-  override fun addMoreDataListener(data: ShowsAdapter.OnMoreData) {
-    listeners.add(data)
-  }
-
-  override fun showMoreData(showId: String, data: LoadMoreDataResult) {
-    listeners.forEach { it.showMoreData(showId, data) }
-  }
-
-
-  override fun play(playback: Playback?) {
-  }
-
-  override fun loadDataError() {
-    retry?.visibility = View.VISIBLE
-  }
-
-  override fun getPlaybackPos() = playbackPosition
-
-  override fun progressView(show: Boolean) {
-  }
-
-  override fun showErrorText(txt: String) {
-    TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-  }
-
-  override fun getColumnSize() = columnSizeX
+  //player views
+  var showName: TextView? = null
+  var showNameSmall: TextView? = null
+  var progressTracker: TextView? = null
+  var sessionDate: RelativeTimeTextView? = null
+  var expDate: TextView? = null
+  var coverBig: ImageView? = null
+  var coverSmall: ImageView? = null
+  var seekBar: SeekBar? = null
+  var timer: TextView? = null
+  var skipBack: ImageView? = null
+  var skipForward: ImageView? = null
+  var playpauseBig: ImageView? = null
+  var playpauseSmall: ImageView? = null
+  //player views end
 
   var columnSizeX = 2
 
@@ -73,19 +63,72 @@ class PlaybackFragment : Fragment(), View.OnClickListener, PlaybackPresenter.Pla
     }
   }
 
+  override fun addMoreDataListener(data: ShowsAdapter.OnMoreData) {
+    listeners.add(data)
+  }
+
+  override fun showMoreData(showId: String, data: LoadMoreDataResult) {
+    listeners.forEach { it.showMoreData(showId, data) }
+  }
+
+
+  override fun play(show: Show, playback: Playback?) {
+    playback?.let {
+      StreamManagerImpl.playRequest(show, playback)
+      setViews(show, playback)
+    }
+  }
+
+
+  fun setViews(show: Show, playback: Playback) {
+
+    showName?.text = show.name
+    showNameSmall?.text = show.name
+    sessionDate?.setReferenceTime(fromISO8601UTC(playback.sessionDate!!)!!.time)
+    coverBig?.loadUrl(show.imgUrl!!)
+    coverSmall?.loadUrl(show.imgUrl!!)
+    expDate?.text = fromISO8601UTC(playback.sessionDate!!)?.toHumanReadable()
+
+//    timer = bottomSheet?.findViewById(R.id.progress_text)
+//    skipBack = bottomSheet?.findViewById(R.id.rewind_button)
+//    skipForward = bottomSheet?.findViewById(R.id.forward_action)
+//    playpauseBig = bottomSheet?.findViewById(R.id.play_action)
+//    playpauseSmall = bottomSheet?.findViewById(R.id.small_play)
+
+  }
+
+
+  override fun loadDataError() {
+    retry?.visibility = View.VISIBLE
+  }
+
+  override fun getPlaybackPos() = playbackPosition
+
+  override fun progressView(show: Boolean) {
+  }
+
+  override fun showErrorText(txt: String) {
+    TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+  }
+
+  override fun getColumnSize() = columnSizeX
+
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     this.config = arguments?.getSerializable("config") as Config
     presenter = PlaybackPresenter(config!!)
     adapter = ShowsAdapter(list, this)
+    StreamManagerImpl.setup(context!!)
   }
 
   override fun onStart() {
     super.onStart()
     presenter?.subscribe(this)
+    StreamManagerImpl.addOnPlayUpdateListener(this)
   }
 
   override fun onStop() {
+    StreamManagerImpl.removeOnPlayUpdateListener(this)
     presenter?.unSubscribe()
     super.onStop()
   }
@@ -97,6 +140,24 @@ class PlaybackFragment : Fragment(), View.OnClickListener, PlaybackPresenter.Pla
     val view = inflater.inflate(R.layout.fragment_playback, container, false)
 
     val bottomSheet = view?.findViewById<View>(R.id.bottom_sheet);
+
+    val peekView = bottomSheet?.findViewById<RelativeLayout>(R.id.peek_view)
+
+    showName = bottomSheet?.findViewById(R.id.program_name_text_view)
+    showNameSmall = bottomSheet?.findViewById(R.id.small_title)
+    progressTracker = bottomSheet?.findViewById(R.id.progress_tracker)
+    sessionDate = bottomSheet?.findViewById(R.id.date)
+    expDate = bottomSheet?.findViewById(R.id.expdate)
+    coverBig = bottomSheet?.findViewById(R.id.cover)
+    coverSmall = bottomSheet?.findViewById(R.id.small_image)
+    seekBar = bottomSheet?.findViewById(R.id.seek_bar)
+    timer = bottomSheet?.findViewById(R.id.progress_text)
+    skipBack = bottomSheet?.findViewById(R.id.rewind_button)
+    skipForward = bottomSheet?.findViewById(R.id.forward_action)
+    playpauseBig = bottomSheet?.findViewById(R.id.play_action)
+    playpauseSmall = bottomSheet?.findViewById(R.id.small_play)
+
+
 
     recyclerView = view?.findViewById(R.id.recycler_view)
 
@@ -130,11 +191,52 @@ class PlaybackFragment : Fragment(), View.OnClickListener, PlaybackPresenter.Pla
 
     bottomSheetBehaviour?.state = BottomSheetBehavior.STATE_COLLAPSED
 
+    bottomSheetBehaviour?.setBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
+      override fun onSlide(bottomSheet: View, slideOffset: Float) {
+      }
+
+      override fun onStateChanged(bottomSheet: View, newState: Int) {
+        if (newState == BottomSheetBehavior.STATE_EXPANDED) peekView?.visibility = View.GONE
+        else peekView?.visibility = View.VISIBLE
+      }
+
+    })
+
     presenter?.fetchWidgetData()
+
+
+    seekBar?.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+      override fun onProgressChanged(seekBar: SeekBar, progerss: Int, fromUser: Boolean) {
+        progressTracker?.text = "${DateUtils.formatElapsedTime(progerss.toLong())}  /  ${DateUtils.formatElapsedTime(seekBar.max.toLong())}"
+      }
+
+      override fun onStartTrackingTouch(seekBar: SeekBar) {
+        progressTracker?.animate()?.cancel()
+        progressTracker?.alpha = 1f
+        progressTracker?.setVisibility(true)
+      }
+
+      override fun onStopTrackingTouch(seekBar: SeekBar) {
+
+        StreamManagerImpl.seek(seekBar.progress.toLong())
+
+        progressTracker!!.animate()
+            .alpha(0f)
+            .setDuration(500)
+            .setStartDelay(500)
+            .setInterpolator(DecelerateInterpolator())
+            .withEndAction {
+              progressTracker?.setVisibility(false)
+              progressTracker?.alpha = 1f
+            }.start()
+      }
+    })
+
 
     return view
 
   }
+
 
   override fun showWidgetData(data: WidgetDataResult) {
     retry?.visibility = View.GONE
@@ -172,10 +274,14 @@ class PlaybackFragment : Fragment(), View.OnClickListener, PlaybackPresenter.Pla
     }
   }
 
-  fun getWidth() {
-    val displayMetrics = DisplayMetrics();
-    activity?.windowManager?.defaultDisplay?.getMetrics(displayMetrics)
-    val width = displayMetrics.widthPixels
+
+  override fun update(progress: Float, current: Long, total: Long) {
+    seekBar?.post {
+      seekBar?.max = total.toInt()
+      seekBar?.progress = current.toInt()
+    }
+
+    progressTracker?.text = "${DateUtils.formatElapsedTime(current)}  /  ${DateUtils.formatElapsedTime(total)}"
   }
 
   companion object {

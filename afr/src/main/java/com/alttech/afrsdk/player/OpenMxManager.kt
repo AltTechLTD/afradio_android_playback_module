@@ -9,7 +9,6 @@ import android.os.IBinder
 import android.support.v7.app.AppCompatActivity
 import android.text.TextUtils
 import android.util.Log
-import co.mobiwise.library.radio.RadioPlayerService
 import com.alttech.afrsdk.player.tiriton_ads.Params
 
 /**
@@ -137,6 +136,7 @@ object OpenMxManager : IRadioManager {
   }
 
   fun initStream(url: String, params: Params?) {
+    println(">>>>>>>>>>>>>>>>>>>>>>>>>" + url)
     if (!TextUtils.isEmpty(url))
       service?.initStream(url, params)
   }

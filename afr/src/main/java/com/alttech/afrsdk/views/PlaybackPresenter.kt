@@ -1,10 +1,7 @@
 package com.alttech.afrsdk.views
 
 import com.alttech.afrsdk.Config
-import com.alttech.afrsdk.data.LoadMoreDataResult
-import com.alttech.afrsdk.data.PlaybackList
-import com.alttech.afrsdk.data.Show
-import com.alttech.afrsdk.data.WidgetDataResult
+import com.alttech.afrsdk.data.*
 import com.alttech.afrsdk.network.ApiCalls
 import rx.subscriptions.CompositeSubscription
 
@@ -51,7 +48,7 @@ class PlaybackPresenter(private val config: Config) {
 
     val p = position - if (playbackListPosition < position) 1 else 0
     playbackListPosition = p + (view!!.getColumnSize() - (p % view!!.getColumnSize()))
-    view?.addPlaybackList(playbackListPosition, PlaybackList(col % view!!.getColumnSize(), show.id, ArrayList(show.playback), 0, show.playback!!.size))
+    view?.addPlaybackList(playbackListPosition, PlaybackList(col % view!!.getColumnSize(), show, ArrayList(show.playback), 0, show.playback!!.size))
   }
 
   fun loadMore(showId: String?, offset: Int, limit: Int) {
@@ -65,6 +62,11 @@ class PlaybackPresenter(private val config: Config) {
           it.printStackTrace()
         })
     )
+  }
+
+  fun play(playback: Playback){
+    
+
   }
 
   interface PlaybackView {
