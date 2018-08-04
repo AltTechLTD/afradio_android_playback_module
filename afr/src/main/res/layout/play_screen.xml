@@ -14,23 +14,39 @@
         <ImageView
             android:id="@+id/small_image"
             android:layout_width="60dp"
+
+
+
+
             android:layout_height="60dp"
             android:layout_centerVertical="true"
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
             android:background="@color/light_grey"/>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_toRightOf="@+id/small_image"
-            android:gravity="center_vertical"
-            android:layout_toLeftOf="@+id/small_play"
-            android:text="Not Playing"
-            android:id="@+id/small_title"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:layout_height="wrap_content"
+        <RelativeLayout
             android:layout_centerVertical="true"
-            />
+            android:layout_toLeftOf="@+id/small_play"
+            android:layout_toRightOf="@+id/small_image"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/small_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Not Playing"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                />
+
+            <com.alttech.afrsdk.views.RelativeTimeTextView
+                android:id="@+id/date2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/small_title"
+                />
+
+        </RelativeLayout>
 
         <ImageView
             android:id="@+id/small_play"
@@ -41,6 +57,19 @@
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
             android:src="@drawable/ic_play_arrow_black_24dp"
+            />
+
+        <ProgressBar
+            android:id="@+id/loading_small"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:padding="5dp"
+            android:visibility="gone"
             />
 
     </RelativeLayout>
@@ -100,9 +129,8 @@
         android:layout_width="match_parent"
         android:layout_height="110dp"
         android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
         android:gravity="center_vertical">
-
-
 
 
         <RelativeLayout
@@ -122,19 +150,14 @@
                 android:layout_toRightOf="@+id/rewind_button"
                 android:src="@drawable/ic_play_circle_filled"/>
 
-            <!--<com.pnikosis.materialishprogress.ProgressWheel-->
-                <!--android:id="@+id/progress_wheel"-->
-                <!--android:layout_width="72dp"-->
-                <!--android:layout_height="72dp"-->
-                <!--android:layout_centerVertical="true"-->
-                <!--android:layout_marginLeft="8dp"-->
-                <!--android:layout_marginRight="8dp"-->
-                <!--android:layout_toEndOf="@+id/rewind_button"-->
-                <!--android:layout_toRightOf="@+id/rewind_button"-->
-                <!--android:padding="8dp"-->
-                <!--android:visibility="gone"-->
-                <!--app:matProg_barColor="@color/white"-->
-                <!--app:matProg_progressIndeterminate="true"/>-->
+            <ProgressBar
+                android:id="@+id/loading_big"
+                android:layout_width="62dp"
+                android:layout_height="62dp"
+                android:layout_centerInParent="true"
+                android:layout_centerVertical="true"
+                android:visibility="gone"
+                />
 
 
             <ImageView

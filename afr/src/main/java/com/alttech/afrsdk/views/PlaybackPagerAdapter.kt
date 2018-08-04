@@ -1,6 +1,7 @@
 package com.alttech.afrsdk.views
 
 import android.content.Context
+import android.database.DataSetObserver
 import android.support.v4.view.PagerAdapter
 import android.support.v4.view.ViewPager
 import android.support.v7.widget.LinearLayoutManager
@@ -29,10 +30,10 @@ class PlaybackPagerAdapter(private val callback: ShowsAdapter.ShowAdapterInterfa
   private var arrowPos = 0
   private var offset = 0
   private  var show: Show? = null
+  private var observerRegistered = false
 
-  private var setpage = fun(page: Int) {
 
-  }
+  private var sp = fun(p: Int) {}
 
   //
   init {
@@ -87,14 +88,7 @@ class PlaybackPagerAdapter(private val callback: ShowsAdapter.ShowAdapterInterfa
   fun getView(position: Int) = views.get(position)
 
 
-  private fun addPlaybackData(context: Context?, playbackList: PlaybackList) {
-    addPlaybackData(context, playbackList, setpage)
-  }
-
-
-  fun addPlaybackData(context: Context?, playbackList: PlaybackList, sp: (page: Int) -> Unit) {
-
-    this.setpage = sp
+  fun addPlaybackData(context: Context?, playbackList: PlaybackList) {
 
     arrowPos = playbackList.itemColumn
     show = playbackList.show
@@ -126,15 +120,21 @@ class PlaybackPagerAdapter(private val callback: ShowsAdapter.ShowAdapterInterfa
 
     this.addView(view, views.size - 1)
 
-//    if (playbackList.count != limit) views.removeAt(views.size - 1)
-
-
     this.notifyDataSetChanged()
+    sp(views.size - 2)
+  }
 
-
+  fun setPagCallback(func: (pg: Int) -> Unit) {
+    sp = func
   }
 
 
   override fun getPageWidth(position: Int) = 0.93f
+
+  override fun registerDataSetObserver(observer: DataSetObserver) {
+    if (observerRegistered) return
+    observerRegistered = true
+    super.registerDataSetObserver(observer)
+  }
 
 }

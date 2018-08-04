@@ -60,13 +60,13 @@ class ShowsAdapter(val data: List<*>, val adapterInterface: ShowAdapterInterface
             relativeLayout?.visibility = View.INVISIBLE
         }
 
+        pagerAdapter.setPagCallback { holder.viewPager?.setCurrentItem(it, true) }
+
 
         holder.viewPager?.adapter = pagerAdapter
 
+        pagerAdapter.addPlaybackData(holder.viewPager?.context, playbackList)
 
-        pagerAdapter.addPlaybackData(holder.viewPager?.context,  playbackList){
-          holder.viewPager?.currentItem = it
-        }
 
         holder.viewPager?.clipToPadding = false
         holder.viewPager?.pageMargin = 12

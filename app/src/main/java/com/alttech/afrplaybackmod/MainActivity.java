@@ -13,6 +13,7 @@ public class MainActivity extends AppCompatActivity {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
 
+    // implemnting mobile widget for AF Radio start
     Config config = new Config();
 
     config.setAppId("tKvHWTnKAXLfxjAYm");
@@ -22,6 +23,6 @@ public class MainActivity extends AppCompatActivity {
         .beginTransaction()
         .add(R.id.main, PlaybackFragment.Companion.newInstance(config))
         .commit();
-
+    // implemnting mobile widget for AF Radio end
   }
 }

@@ -1,8 +1,10 @@
 package com.alttech.afrsdk.views
 
 import android.os.Bundle
+import android.os.Parcelable
 import android.support.design.widget.BottomSheetBehavior
 import android.support.v4.app.Fragment
+import android.support.v4.content.ContextCompat
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.text.format.DateUtils
@@ -17,13 +19,16 @@ import com.alttech.afrsdk.player.RadioListener
 import com.alttech.afrsdk.player.StreamManagerImpl
 
 
-class PlaybackFragment : Fragment(), View.OnClickListener, PlaybackPresenter.PlaybackView, ShowsAdapter.ShowAdapterInterface, RadioListener.PlayUpdaterListener {
+class PlaybackFragment : Fragment(), View.OnClickListener, PlaybackPresenter.PlaybackView,
+    ShowsAdapter.ShowAdapterInterface, RadioListener.PlayUpdaterListener, RadioListener {
+
 
   //player views
   var showName: TextView? = null
   var showNameSmall: TextView? = null
   var progressTracker: TextView? = null
   var sessionDate: RelativeTimeTextView? = null
+  var sessionDate2: RelativeTimeTextView? = null
   var expDate: TextView? = null
   var coverBig: ImageView? = null
   var coverSmall: ImageView? = null
@@ -33,7 +38,10 @@ class PlaybackFragment : Fragment(), View.OnClickListener, PlaybackPresenter.Pla
   var skipForward: ImageView? = null
   var playpauseBig: ImageView? = null
   var playpauseSmall: ImageView? = null
-  //player views end
+
+  var loadSmall: ProgressBar? = null
+  var loadBig: ProgressBar? = null
+
 
   var columnSizeX = 2
 
@@ -85,6 +93,7 @@ class PlaybackFragment : Fragment(), View.OnClickListener, PlaybackPresenter.Pla
     showName?.text = show.name
     showNameSmall?.text = show.name
     sessionDate?.setReferenceTime(fromISO8601UTC(playback.sessionDate!!)!!.time)
+    sessionDate2?.setReferenceTime(fromISO8601UTC(playback.sessionDate!!)!!.time)
     coverBig?.loadUrl(show.imgUrl!!)
     coverSmall?.loadUrl(show.imgUrl!!)
     expDate?.text = fromISO8601UTC(playback.sessionDate!!)?.toHumanReadable()
@@ -125,11 +134,13 @@ class PlaybackFragment : Fragment(), View.OnClickListener, PlaybackPresenter.Pla
     super.onStart()
     presenter?.subscribe(this)
     StreamManagerImpl.addOnPlayUpdateListener(this)
+    StreamManagerImpl.setRadiolistener(this)
   }
 
   override fun onStop() {
     StreamManagerImpl.removeOnPlayUpdateListener(this)
     presenter?.unSubscribe()
+    StreamManagerImpl.removelistener(this)
     super.onStop()
   }
 
@@ -147,6 +158,7 @@ class PlaybackFragment : Fragment(), View.OnClickListener, PlaybackPresenter.Pla
     showNameSmall = bottomSheet?.findViewById(R.id.small_title)
     progressTracker = bottomSheet?.findViewById(R.id.progress_tracker)
     sessionDate = bottomSheet?.findViewById(R.id.date)
+    sessionDate2 = bottomSheet?.findViewById(R.id.date2)
     expDate = bottomSheet?.findViewById(R.id.expdate)
     coverBig = bottomSheet?.findViewById(R.id.cover)
     coverSmall = bottomSheet?.findViewById(R.id.small_image)
@@ -157,6 +169,8 @@ class PlaybackFragment : Fragment(), View.OnClickListener, PlaybackPresenter.Pla
     playpauseBig = bottomSheet?.findViewById(R.id.play_action)
     playpauseSmall = bottomSheet?.findViewById(R.id.small_play)
 
+    loadBig = bottomSheet?.findViewById(R.id.loading_big)
+    loadSmall = bottomSheet?.findViewById(R.id.loading_small)
 
 
     recyclerView = view?.findViewById(R.id.recycler_view)
@@ -247,8 +261,8 @@ class PlaybackFragment : Fragment(), View.OnClickListener, PlaybackPresenter.Pla
   }
 
 
-  override fun loadMore(showId: String?, offsett: Int, limit: Int) {
-    presenter?.loadMore(showId, offsett, limit)
+  override fun loadMore(showId: String?, offset: Int, limit: Int) {
+    presenter?.loadMore(showId, offset, limit)
   }
 
 
@@ -281,7 +295,56 @@ class PlaybackFragment : Fragment(), View.OnClickListener, PlaybackPresenter.Pla
       seekBar?.progress = current.toInt()
     }
 
-    progressTracker?.text = "${DateUtils.formatElapsedTime(current)}  /  ${DateUtils.formatElapsedTime(total)}"
+    timer?.text = "${DateUtils.formatElapsedTime(current / 1000)}  /  ${DateUtils.formatElapsedTime(total / 1000)}"
+  }
+
+  override fun onRadioLoading() {
+    playpauseSmall?.setVisibility(false)
+    playpauseBig?.setVisibility(false)
+
+    loadSmall?.setVisibility(true)
+    loadBig?.setVisibility(true)
+  }
+
+  override fun onRadioSwitching() {
+  }
+
+  override fun onRadioConnected() {
+  }
+
+  override fun onRadioStarted(mime: String, sampleRate: Int, channels: Int, duration: Long) {
+  }
+
+  override fun onRadioPlay() {
+    playpauseSmall?.setVisibility(true)
+    playpauseBig?.setVisibility(true)
+
+    loadSmall?.setVisibility(false)
+    loadBig?.setVisibility(false)
+
+    playpauseBig?.background = ContextCompat.getDrawable(context!!, R.drawable.ic_pause_circle_filled_black_24dp);
+    playpauseSmall?.background = ContextCompat.getDrawable(context!!, R.drawable.ic_pause_circle_filled_black_24dp);
+
+  }
+
+  override fun onRadioPaused() {
+    playpauseSmall?.setVisibility(true)
+    playpauseBig?.setVisibility(true)
+
+    playpauseBig?.background = ContextCompat.getDrawable(context!!, R.drawable.ic_play_arrow_black_24dp);
+    playpauseSmall?.background = ContextCompat.getDrawable(context!!, R.drawable.ic_play_arrow_black_24dp);
+  }
+
+  override fun onRadioStopped() {
+  }
+
+  override fun playingAd() {
+  }
+
+  override fun onError() {
+  }
+
+  override fun metaData(meta: Parcelable) {
   }
 
   companion object {

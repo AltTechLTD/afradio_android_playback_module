@@ -7,9 +7,13 @@ import com.alttech.afrsdk.data.Playback
 import com.alttech.afrsdk.data.Show
 import com.alttech.afrsdk.player.tiriton_ads.Params
 import java.util.*
+import kotlin.collections.ArrayList
 
 
 object StreamManagerImpl : RadioListener {
+
+
+  val listeners = ArrayList<RadioListener>()
 
 
   fun addOnPlayUpdateListener(listener: RadioListener.PlayUpdaterListener) {
@@ -76,44 +80,53 @@ object StreamManagerImpl : RadioListener {
 
 
   override fun playingAd() {
-//    RxBus.post(Events.RadioListener(Events.RadioListener.ListenerEvents.PLAYING_AD))
+    listeners.forEach { it.playingAd() }
   }
 
   override fun metaData(meta: Parcelable) {
-//    RxBus.post(Events.AdEvent(meta as Bundle))
+    listeners.forEach { it.metaData(meta) }
   }
 
-
-  fun onPlay() {
+  fun setRadiolistener(listener: RadioListener) {
+    listeners.add(listener)
   }
+
+  fun removelistener(listener: RadioListener) {
+    listeners.remove(listener)
+  }
+
 
   override fun onRadioLoading() {
+    listeners.forEach { it.onRadioLoading() }
   }
 
   override fun onRadioConnected() {
+    listeners.forEach { it.onRadioConnected() }
   }
 
   override fun onRadioStarted(mime: String, sampleRate: Int, channels: Int, duration: Long) {
-    radioStarted()
-  }
-
-  internal fun radioStarted() {
+    listeners.forEach { it.onRadioStarted(mime, sampleRate, channels, duration) }
   }
 
   override fun onRadioPlay() {
-    radioStarted()
+    listeners.forEach { it.onRadioPlay() }
   }
 
   override fun onRadioPaused() {
+
+    listeners.forEach { it.onRadioPaused() }
   }
 
   override fun onRadioSwitching() {
+    listeners.forEach { it.onRadioSwitching() }
   }
 
   override fun onRadioStopped() {
+    listeners.forEach { it.onRadioStopped() }
   }
 
 
   override fun onError() {
+    listeners.forEach { it.onError() }
   }
 }

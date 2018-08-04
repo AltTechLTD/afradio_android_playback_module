@@ -22,6 +22,7 @@ val Int.toPx: Int
   get() = (this * Resources.getSystem().displayMetrics.density).toInt()
 
 fun ImageView.loadUrl(url: String) {
+  println("img url .>>>>>>>>>>>>>>"+ url)
   Picasso.with(context).load(url).into(this)
 }
 
