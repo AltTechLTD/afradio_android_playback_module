@@ -1,5 +1,6 @@
 package com.alttech.afrsdk.views
 
+import android.graphics.Rect
 import android.os.Bundle
 import android.os.Parcelable
 import android.support.design.widget.BottomSheetBehavior
@@ -7,6 +8,8 @@ import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.text.Editable
+import android.text.TextWatcher
 import android.text.format.DateUtils
 import android.view.LayoutInflater
 import android.view.View
@@ -17,6 +20,7 @@ import com.alttech.afrsdk.*
 import com.alttech.afrsdk.data.*
 import com.alttech.afrsdk.player.RadioListener
 import com.alttech.afrsdk.player.StreamManagerImpl
+import com.squareup.picasso.Picasso
 
 
 class PlaybackFragment : Fragment(), View.OnClickListener, PlaybackPresenter.PlaybackView,
@@ -39,8 +43,13 @@ class PlaybackFragment : Fragment(), View.OnClickListener, PlaybackPresenter.Pla
   var playpauseBig: ImageView? = null
   var playpauseSmall: ImageView? = null
 
+  var loading: ProgressBar? = null
+  var layout: RelativeLayout? = null
+
   var loadSmall: ProgressBar? = null
   var loadBig: ProgressBar? = null
+
+  var filterEditText: EditText? = null
 
 
   var columnSizeX = 2
@@ -55,6 +64,7 @@ class PlaybackFragment : Fragment(), View.OnClickListener, PlaybackPresenter.Pla
 
   var retry: Button? = null
 
+  val originalList: ArrayList<Any?> = ArrayList()
   val list: ArrayList<Any?> = ArrayList()
 
   lateinit var adapter:ShowsAdapter
@@ -109,6 +119,8 @@ class PlaybackFragment : Fragment(), View.OnClickListener, PlaybackPresenter.Pla
 
   override fun loadDataError() {
     retry?.visibility = View.VISIBLE
+    loading?.visibility = View.GONE
+    layout?.visibility = View.VISIBLE
   }
 
   override fun getPlaybackPos() = playbackPosition
@@ -124,6 +136,9 @@ class PlaybackFragment : Fragment(), View.OnClickListener, PlaybackPresenter.Pla
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
+
+    Picasso.get().setLoggingEnabled(true)
+
     this.config = arguments?.getSerializable("config") as Config
     presenter = PlaybackPresenter(config!!)
     adapter = ShowsAdapter(list, this)
@@ -174,6 +189,30 @@ class PlaybackFragment : Fragment(), View.OnClickListener, PlaybackPresenter.Pla
 
 
     recyclerView = view?.findViewById(R.id.recycler_view)
+    filterEditText = view?.findViewById(R.id.search)
+
+    layout = view?.findViewById(R.id.layout)
+    loading = view?.findViewById(R.id.loading)
+
+
+    filterEditText?.addTextChangedListener(object : TextWatcher {
+      override fun afterTextChanged(p0: Editable?) {
+      }
+
+      override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+      }
+
+      override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+        list.clear()
+        originalList.forEach {
+          when (it) {is Show -> if (it.name?.contains(p0!!)!!) list.add(it)
+          }
+        }
+        adapter.notifyDataSetChanged()
+      }
+
+    })
+
 
     retry = view?.findViewById(R.id.retry)
 
@@ -201,7 +240,7 @@ class PlaybackFragment : Fragment(), View.OnClickListener, PlaybackPresenter.Pla
 
     bottomSheetBehaviour = BottomSheetBehavior.from(bottomSheet)
 
-    bottomSheetBehaviour?.peekHeight = 80.toPx
+//    bottomSheetBehaviour?.peekHeight = 80.toPx
 
     bottomSheetBehaviour?.state = BottomSheetBehavior.STATE_COLLAPSED
 
@@ -245,7 +284,22 @@ class PlaybackFragment : Fragment(), View.OnClickListener, PlaybackPresenter.Pla
             }.start()
       }
     })
+    view.viewTreeObserver.addOnGlobalLayoutListener {
 
+      val r = Rect()
+      view.getWindowVisibleDisplayFrame(r);
+      val screenHeight = view.getRootView().getHeight();
+
+      val keypadHeight = screenHeight - r.bottom;
+
+
+//      if (keypadHeight > screenHeight * 0.15 && bottomSheetBehaviour?.state == BottomSheetBehavior.STATE_COLLAPSED) {
+//        bottomSheetBehaviour?.state = BottomSheetBehavior.STATE_HIDDEN
+//      } else {
+//        bottomSheetBehaviour?.state = BottomSheetBehavior.STATE_COLLAPSED
+//      }
+
+    }
 
     return view
 
@@ -254,9 +308,15 @@ class PlaybackFragment : Fragment(), View.OnClickListener, PlaybackPresenter.Pla
 
   override fun showWidgetData(data: WidgetDataResult) {
     retry?.visibility = View.GONE
+    loading?.visibility = View.GONE
+    layout?.visibility = View.VISIBLE
+
 
     list.clear()
-    data.shows?.let { list.addAll(it) }
+    data.shows?.let {
+      list.addAll(it)
+      originalList.addAll(it)
+    }
     adapter.notifyDataSetChanged()
   }
 

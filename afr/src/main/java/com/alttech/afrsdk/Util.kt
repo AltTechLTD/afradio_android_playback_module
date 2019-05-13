@@ -22,8 +22,13 @@ val Int.toPx: Int
   get() = (this * Resources.getSystem().displayMetrics.density).toInt()
 
 fun ImageView.loadUrl(url: String) {
-  println("img url .>>>>>>>>>>>>>>"+ url)
-  Picasso.with(context).load(url).into(this)
+
+  var u = url
+
+  if (url.contains("http://"))
+    u = url.replace("http://", "https://")
+
+  Picasso.get().load(u).into(this)
 }
 
 fun fromISO8601UTC(dateStr: String): Date? {
@@ -67,7 +72,7 @@ class DividerItemDecoration : RecyclerView.ItemDecoration {
     mDivider = ContextCompat.getDrawable(context, resId)
   }
 
-  override fun onDraw(c: Canvas, parent: RecyclerView, state: RecyclerView.State?) {
+  override fun onDraw(c: Canvas, parent: RecyclerView, state: RecyclerView.State) {
     val left = parent.paddingLeft
     val right = parent.width - parent.paddingRight
 
@@ -86,7 +91,6 @@ class DividerItemDecoration : RecyclerView.ItemDecoration {
   }
 
   companion object {
-
     private val ATTRS = intArrayOf(android.R.attr.listDivider)
   }
 }
